@@ -35,15 +35,28 @@ npm start
 npm run dev
 ```
 
-L'API est accessible sur `http://localhost:3000`
+L'application est accessible sur `http://localhost:3000`
 
-## Endpoints
+## Interface Web
 
-| Méthode | Endpoint        | Description              |
-|---------|-----------------|--------------------------|
-| GET     | `/tasks`        | Récupérer toutes les tâches |
-| POST    | `/tasks`        | Créer une tâche          |
-| DELETE  | `/tasks/:id`    | Supprimer une tâche      |
+Accédez à l'interface visuelle de la todolist directement dans votre navigateur :
+
+**http://localhost:3000**
+
+L'interface permet de :
+- Voir toutes les tâches
+- Ajouter une nouvelle tâche
+- Supprimer une tâche
+
+## API REST
+
+L'API JSON est disponible sur les endpoints suivants :
+
+| Méthode | Endpoint           | Description              |
+|---------|-------------------|--------------------------|
+| GET     | `/tasks`          | Récupérer toutes les tâches |
+| POST    | `/tasks`          | Créer une tâche          |
+| DELETE  | `/tasks/:id`      | Supprimer une tâche      |
 
 ### Exemples
 
@@ -102,6 +115,7 @@ nodeToDo/
 │   ├── models/          # Modèles Mongoose
 │   ├── controllers/     # Logique métier
 │   ├── routes/          # Routes Express
+│   ├── views/           # Templates Pug
 │   ├── config/          # Configuration DB
 │   ├── app.js           # Configuration Express
 │   └── server.js        # Point d'entrée
@@ -116,6 +130,7 @@ nodeToDo/
 - **Express** - Framework web
 - **MongoDB** - Base de données NoSQL
 - **Mongoose** - ODM pour MongoDB
+- **Pug** - Moteur de templates
 - **Jest** - Framework de tests
 - **ESLint** - Linter
 - **Prettier** - Formateur de code

@@ -1,0 +1,139 @@
+- const pageTitle = 'Ma TodoList'
+- const addTaskUrl = '/tasks/add'
+- const emptyMessage = 'Aucune tâche pour le moment'
+
+mixin taskInput(placeholder, buttonText)
+  form.task-form(action=addTaskUrl, method='POST')
+    input.task-input(type='text', name='title', placeholder=placeholder, required)
+    button.btn.btn-primary(type='submit')= buttonText
+
+mixin taskCard(task)
+  .task-card
+    .task-content
+      span.task-text= task.title
+    .task-actions
+      form(action=`/tasks/delete/${task._id}`, method='POST')
+        button.btn.btn-danger(type='submit') Supprimer
+
+doctype html
+html(lang='fr')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= pageTitle
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #f8f9fa;
+        padding: 20px;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      h1 {
+        color: #212529;
+        margin-bottom: 25px;
+        font-size: 28px;
+        text-align: center;
+      }
+      .task-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+      }
+      .task-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: border-color 0.2s;
+      }
+      .task-input:focus {
+        outline: none;
+        border-color: #0d6efd;
+      }
+      .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #0d6efd;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #0b5ed7;
+      }
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+      .btn-danger:hover {
+        background: #bb2d3b;
+      }
+      .tasks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .task-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 4px solid #0d6efd;
+        transition: transform 0.2s;
+      }
+      .task-card:hover {
+        transform: translateX(5px);
+      }
+      .task-content {
+        flex: 1;
+      }
+      .task-text {
+        color: #212529;
+        font-size: 16px;
+      }
+      .task-actions form {
+        display: inline;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+        font-size: 16px;
+      }
+  body
+    .container
+      h1= pageTitle
+
+      +taskInput('Ajouter une nouvelle tâche...', 'Ajouter')
+
+      - const hasTasks = tasks && tasks.length > 0
+
+      if hasTasks
+        .tasks-container
+          each task in tasks
+            +taskCard(task)
+      else
+        .empty-state= emptyMessage
