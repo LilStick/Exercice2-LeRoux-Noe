@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+*.md
+coverage
+__tests__
+jest.config.js
+.eslintrc.js
+.prettierrc

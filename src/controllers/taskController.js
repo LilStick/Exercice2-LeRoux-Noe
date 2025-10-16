@@ -1,28 +1,40 @@
-const taskModel = require('../models/TaskModel');
+const Task = require('../models/Task');
 
-exports.getTasks = (req, res) => {
-  const tasks = taskModel.getAll();
-  res.json({ tasks });
+exports.getTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.json({ tasks });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-exports.addTask = (req, res) => {
-  const { title } = req.body;
+exports.addTask = async (req, res) => {
+  try {
+    const { title } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
+    const task = await Task.create({ title });
+    res.status(201).json({ task });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  const task = taskModel.add(title);
-  res.status(201).json({ task });
 };
 
-exports.removeTask = (req, res) => {
-  const { id } = req.params;
-  const task = taskModel.remove(id);
+exports.removeTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findByIdAndDelete(id);
 
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json({ message: 'Task removed', task });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  res.json({ message: 'Task removed', task });
 };
