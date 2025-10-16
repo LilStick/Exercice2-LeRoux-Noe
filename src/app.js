@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const taskRoutes = require('./routes/taskRoutes');
+const taskPgRoutes = require('./routes/taskPgRoutes');
 const viewRoutes = require('./routes/viewRoutes');
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/tasks', taskRoutes);
+app.use('/tasks-pg', taskPgRoutes);
 app.use('/', viewRoutes);
 
 module.exports = app;

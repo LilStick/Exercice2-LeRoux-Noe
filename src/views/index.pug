@@ -2,12 +2,13 @@
 - const addTaskUrl = '/tasks/add'
 - const emptyMessage = 'Aucune tâche pour le moment'
 
-mixin taskInput(placeholder, buttonText)
+mixin taskInput(placeholder, buttonText, dbType)
   form.task-form(action=addTaskUrl, method='POST')
     input.task-input(type='text', name='title', placeholder=placeholder, required)
+    input(type='hidden', name='db', value=dbType)
     button.btn.btn-primary(type='submit')= buttonText
 
-mixin taskCard(task)
+mixin taskCard(task, dbType)
   .task-card
     .task-content
       span.task-text= task.title
@@ -109,13 +110,39 @@ html(lang='fr')
       }
       .task-content {
         flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
       .task-text {
         color: #212529;
         font-size: 16px;
       }
+      .task-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .badge-mongo {
+        background: #13aa52;
+        color: white;
+      }
+      .badge-postgres {
+        background: #336791;
+        color: white;
+      }
       .task-actions form {
         display: inline;
+      }
+      .db-section {
+        margin-bottom: 30px;
+      }
+      .db-title {
+        font-size: 20px;
+        color: #495057;
+        margin-bottom: 15px;
+        font-weight: 600;
       }
       .empty-state {
         text-align: center;
@@ -127,13 +154,22 @@ html(lang='fr')
     .container
       h1= pageTitle
 
-      +taskInput('Ajouter une nouvelle tâche...', 'Ajouter')
+      .db-section
+        h2.db-title Ajouter une tâche
+        form.task-form(action=addTaskUrl, method='POST')
+          input.task-input(type='text', name='title', placeholder='Nouvelle tâche...', required)
+          button.btn.btn-primary(type='submit') Ajouter
 
-      - const hasTasks = tasks && tasks.length > 0
+      - const hasMongoTasks = mongoTasks && mongoTasks.length > 0
+      - const hasPgTasks = pgTasks && pgTasks.length > 0
+      - const displayTasks = mongoTasks || []
+      - const hasTasks = displayTasks.length > 0
 
       if hasTasks
-        .tasks-container
-          each task in tasks
-            +taskCard(task)
+        .db-section
+          h2.db-title Toutes les tâches
+          .tasks-container
+            each task in displayTasks
+              +taskCard(task, 'mongo')
       else
         .empty-state= emptyMessage
