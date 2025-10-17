@@ -7,17 +7,25 @@ const { pool } = require('../src/config/postgres');
 beforeAll(async () => {
   const mongoUri = 'mongodb://localhost:27017/todolist-test';
   await mongoose.connect(mongoUri);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS tasks_pg (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 });
 
 afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
+  await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
   await pool.end();
 });
 
 afterEach(async () => {
   await Task.deleteMany({});
-  await pool.query('DELETE FROM tasks_pg');
+  await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
 });
 
 describe('View Controller - Dual Database Sync', () => {

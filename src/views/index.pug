@@ -11,10 +11,18 @@ mixin taskInput(placeholder, buttonText, dbType)
 mixin taskCard(task, dbType)
   .task-card
     .task-content
+      if dbType === 'postgres'
+        span.db-badge.db-badge-postgres PG
+      else
+        span.db-badge.db-badge-mongo MDB
       span.task-text= task.title
     .task-actions
-      form(action=`/tasks/delete/${task._id}`, method='POST')
-        button.btn.btn-danger(type='submit') Supprimer
+      if dbType === 'postgres'
+        form(action=`/tasks/delete/${task.id}?db=postgres`, method='POST')
+          button.btn.btn-danger(type='submit') Supprimer
+      else
+        form(action=`/tasks/delete/${task._id}?db=mongo`, method='POST')
+          button.btn.btn-danger(type='submit') Supprimer
 
 doctype html
 html(lang='fr')
@@ -114,6 +122,26 @@ html(lang='fr')
         align-items: center;
         gap: 10px;
       }
+      .db-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        text-transform: uppercase;
+      }
+      .db-badge-mongo {
+        background: #13aa52;
+        color: white;
+      }
+      .db-badge-postgres {
+        background: #336791;
+        color: white;
+      }
       .task-text {
         color: #212529;
         font-size: 16px;
@@ -162,14 +190,14 @@ html(lang='fr')
 
       - const hasMongoTasks = mongoTasks && mongoTasks.length > 0
       - const hasPgTasks = pgTasks && pgTasks.length > 0
-      - const displayTasks = mongoTasks || []
-      - const hasTasks = displayTasks.length > 0
+      - const allTasks = [...(mongoTasks || []).map(t => ({...t, _id: t._id, title: t.title, dbType: 'mongo'})), ...(pgTasks || []).map(t => ({...t, id: t.id, title: t.title, dbType: 'postgres'}))]
+      - const hasTasks = allTasks.length > 0
 
       if hasTasks
         .db-section
           h2.db-title Toutes les tâches
           .tasks-container
-            each task in displayTasks
-              +taskCard(task, 'mongo')
+            each task in allTasks
+              +taskCard(task, task.dbType)
       else
         .empty-state= emptyMessage

@@ -31,6 +31,27 @@ PG_PASSWORD=votre_password
 PG_HOST=localhost
 PG_PORT=5432
 PG_DATABASE=todolist
+DATABASE_MODE=both
+```
+
+### Mode de base de données
+
+Le projet supporte trois modes de fonctionnement via la variable `DATABASE_MODE` :
+
+- **`both`** (par défaut) : Synchronise les données entre MongoDB et PostgreSQL
+- **`mongodb`** : Utilise uniquement MongoDB
+- **`postgresql`** : Utilise uniquement PostgreSQL
+
+**Exemple :**
+```bash
+# Mode MongoDB uniquement
+DATABASE_MODE=mongodb npm start
+
+# Mode PostgreSQL uniquement
+DATABASE_MODE=postgresql npm start
+
+# Mode synchronisé (par défaut)
+DATABASE_MODE=both npm start
 ```
 
 ### Créer la base PostgreSQL
