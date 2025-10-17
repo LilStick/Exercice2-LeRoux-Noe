@@ -176,13 +176,34 @@ npm run format
 
 ## Docker
 
+Déploiement complet avec MongoDB et PostgreSQL :
+
 ```bash
-# Lancer avec Docker Compose
+# Lancer tous les services (MongoDB + PostgreSQL + App)
 docker-compose up --build
+
+# Lancer en arrière-plan
+docker-compose up -d --build
+
+# Voir les logs
+docker-compose logs -f app
 
 # Arrêter les conteneurs
 docker-compose down
+
+# Arrêter et supprimer les volumes (données)
+docker-compose down -v
 ```
+
+**Services Docker :**
+- **app** : Application Node.js (port 3000)
+- **mongodb** : Base de données MongoDB (port 27017)
+- **postgres** : Base de données PostgreSQL (port 5432)
+
+**Accès à l'application :**
+- Interface web : http://localhost:3000
+- API MongoDB : http://localhost:3000/tasks
+- API PostgreSQL : http://localhost:3000/tasks-pg
 
 ## Structure
 

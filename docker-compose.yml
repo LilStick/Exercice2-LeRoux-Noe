@@ -8,6 +8,28 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - todolist-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: todolist-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=todolist
+      - POSTGRES_PASSWORD=todolist
+      - POSTGRES_DB=todolist
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - todolist-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todolist"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -17,8 +39,24 @@ services:
     environment:
       - PORT=3000
       - MONGODB_URI=mongodb://mongodb:27017/todolist
+      - PG_USER=todolist
+      - PG_PASSWORD=todolist
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_DATABASE=todolist
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - todolist-network
+    restart: on-failure
 
 volumes:
   mongo-data:
+  postgres-data:
+
+networks:
+  todolist-network:
+    driver: bridge
