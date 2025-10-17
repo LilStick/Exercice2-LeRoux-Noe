@@ -11,13 +11,18 @@ mixin taskInput(placeholder, buttonText, dbType)
 mixin taskCard(task, dbType)
   .task-card
     .task-content
-      if dbType === 'postgres'
-        span.db-badge.db-badge-postgres PG
+      if dbType === 'both'
+        span.db-badge.db-badge-both BOTH
+      else if dbType === 'postgres'
+        span.db-badge.db-badge-postgres POSTGRESQL
       else
-        span.db-badge.db-badge-mongo MDB
+        span.db-badge.db-badge-mongo MONGODB
       span.task-text= task.title
     .task-actions
-      if dbType === 'postgres'
+      if dbType === 'both'
+        form(action=`/tasks/delete/${task._id}?db=mongo`, method='POST')
+          button.btn.btn-danger(type='submit') Supprimer
+      else if dbType === 'postgres'
         form(action=`/tasks/delete/${task.id}?db=postgres`, method='POST')
           button.btn.btn-danger(type='submit') Supprimer
       else
@@ -142,6 +147,10 @@ html(lang='fr')
         background: #336791;
         color: white;
       }
+      .db-badge-both {
+        background: linear-gradient(90deg, #13aa52 50%, #336791 50%);
+        color: white;
+      }
       .task-text {
         color: #212529;
         font-size: 16px;
@@ -190,7 +199,19 @@ html(lang='fr')
 
       - const hasMongoTasks = mongoTasks && mongoTasks.length > 0
       - const hasPgTasks = pgTasks && pgTasks.length > 0
-      - const allTasks = [...(mongoTasks || []).map(t => ({...t, _id: t._id, title: t.title, dbType: 'mongo'})), ...(pgTasks || []).map(t => ({...t, id: t.id, title: t.title, dbType: 'postgres'}))]
+      - const mongoTitles = (mongoTasks || []).map(t => t.title)
+      - const pgTitles = (pgTasks || []).map(t => t.title)
+      - const allTasks = []
+      - (mongoTasks || []).forEach(t => {
+      -   const isInBoth = pgTitles.includes(t.title)
+      -   allTasks.push({...t, _id: t._id, title: t.title, dbType: isInBoth ? 'both' : 'mongo'})
+      - })
+      - (pgTasks || []).forEach(t => {
+      -   const isInBoth = mongoTitles.includes(t.title)
+      -   if (!isInBoth) {
+      -     allTasks.push({...t, id: t.id, title: t.title, dbType: 'postgres'})
+      -   }
+      - })
       - const hasTasks = allTasks.length > 0
 
       if hasTasks
