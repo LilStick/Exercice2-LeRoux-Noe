@@ -17,13 +17,13 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await Task.deleteMany({});
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
-  await pool.end();
 });
 
-afterEach(async () => {
+beforeEach(async () => {
   await Task.deleteMany({});
   await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
 });
@@ -84,13 +84,14 @@ describe('View Controller - Dual Database Sync', () => {
 
   describe('GET /', () => {
     it('should render index with tasks from both databases', async () => {
-      await Task.create({ title: 'MongoDB Task' });
+      const mongoTask = await Task.create({ title: 'MongoDB Task' });
       await pool.query("INSERT INTO tasks_pg (title) VALUES ('PostgreSQL Task')");
 
       const response = await request(app).get('/');
 
       expect(response.status).toBe(200);
       expect(response.text).toContain('MongoDB Task');
+      expect(response.text).toContain('PostgreSQL Task');
     });
 
     it('should render index with empty message when no tasks', async () => {

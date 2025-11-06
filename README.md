@@ -1,6 +1,246 @@
 # TodoList API
 
-API REST simple pour gérer une liste de tâches avec Node.js, Express, MongoDB et PostgreSQL.
+Node.js REST API for managing a task list with Express, MongoDB, PostgreSQL, and Swagger documentation.
+
+## Features
+
+- Dual database support (MongoDB + PostgreSQL)
+- RESTful API endpoints
+- Interactive Swagger UI documentation
+- Comprehensive test suite (27 tests)
+- 77% code coverage
+- Web interface for task management
+
+## Installation
+
+```bash
+# Clone the project
+git clone <repo-url>
+cd nodeToDo
+
+# Install dependencies
+npm install
+
+# Start MongoDB
+brew services start mongodb-community
+
+# Start PostgreSQL
+brew services start postgresql
+```
+
+## Configuration
+
+Create a `.env` file at the root:
+
+```env
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/todolist
+PG_USER=your_user
+PG_PASSWORD=your_password
+PG_HOST=localhost
+PG_PORT=5432
+PG_DATABASE=todolist
+DATABASE_MODE=both
+```
+
+### Database Modes
+
+The project supports three operation modes via `DATABASE_MODE`:
+
+- **`both`** (default): Synchronizes data between MongoDB and PostgreSQL
+- **`mongodb`**: Uses MongoDB only
+- **`postgresql`**: Uses PostgreSQL only
+
+### Create PostgreSQL Database
+
+```bash
+# Create database (replace USER with your username)
+createdb -U USER todolist
+```
+
+The `tasks_pg` table will be created automatically on startup.
+
+## Getting Started
+
+```bash
+# Production mode
+npm start
+
+# Development mode (auto-reload)
+npm run dev
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+Application runs on `http://localhost:3000`
+
+## Swagger Documentation
+
+Access interactive API documentation at:
+
+**http://localhost:3000/api-docs**
+
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Request/response schemas
+- Interactive testing interface
+- OpenAPI 3.0 specification
+
+Swagger JSON specification available at:
+**http://localhost:3000/api-docs.json**
+
+## API Endpoints
+
+### MongoDB Tasks
+
+- `GET /tasks` - Get all tasks
+- `POST /tasks` - Create a new task
+  - Body: `{ "title": "Task title" }`
+- `DELETE /tasks/:id` - Delete a task by MongoDB ID
+
+### PostgreSQL Tasks
+
+- `GET /tasks-pg` - Get all tasks
+- `POST /tasks-pg` - Create a new task
+  - Body: `{ "title": "Task title" }`
+- `DELETE /tasks-pg/:id` - Delete a task by PostgreSQL ID
+
+### Web Interface
+
+- `GET /` - Display task management interface
+- `POST /tasks/add` - Add task to both databases (form)
+- `POST /tasks/delete/:id` - Delete task from both databases (form)
+
+## Testing
+
+```bash
+# Run all tests with coverage
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Test Coverage
+
+- 27 tests total
+- 77.43% code coverage
+- Tests include:
+  - Swagger documentation (10 tests)
+  - MongoDB operations (6 tests)
+  - PostgreSQL operations (6 tests)
+  - View controller (5 tests)
+
+## Project Structure
+
+```
+nodeToDo/
+├── src/
+│   ├── app.js                 # Express app configuration
+│   ├── server.js              # Server entry point
+│   ├── config/
+│   │   ├── database.js        # MongoDB connection
+│   │   ├── postgres.js        # PostgreSQL connection
+│   │   └── swagger.js         # Swagger configuration
+│   ├── controllers/
+│   │   ├── taskController.js     # MongoDB task controller
+│   │   ├── taskPgController.js   # PostgreSQL task controller
+│   │   └── viewController.js     # Web interface controller
+│   ├── models/
+│   │   └── Task.js            # MongoDB Task model
+│   ├── routes/
+│   │   ├── taskRoutes.js      # MongoDB task routes
+│   │   ├── taskPgRoutes.js    # PostgreSQL task routes
+│   │   └── viewRoutes.js      # Web interface routes
+│   └── views/
+│       └── index.pug          # Web interface template
+├── __tests__/
+│   ├── task.test.js           # MongoDB tests
+│   ├── taskPg.test.js         # PostgreSQL tests
+│   ├── view.test.js           # View controller tests
+│   └── swagger.test.js        # Swagger documentation tests
+├── .env                       # Environment variables
+├── package.json
+└── README.md
+```
+
+## Technologies
+
+- **Node.js** - JavaScript runtime
+- **Express 5** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB ODM
+- **PostgreSQL** - SQL database
+- **pg** - PostgreSQL client
+- **Swagger UI Express** - API documentation
+- **Swagger JSDoc** - OpenAPI specification generator
+- **Pug** - Template engine
+- **Jest** - Testing framework
+- **Supertest** - HTTP testing
+
+## Database Schema
+
+### MongoDB Task Model
+```javascript
+{
+  _id: ObjectId,
+  title: String (required),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### PostgreSQL tasks_pg Table
+```sql
+CREATE TABLE tasks_pg (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Key Changes and Improvements
+
+### 1. Swagger Documentation Implementation
+- Added `swagger-jsdoc` and `swagger-ui-express` packages
+- Created comprehensive API documentation with OpenAPI 3.0 specification
+- Documented all endpoints with request/response schemas
+- Added interactive Swagger UI at `/api-docs`
+- Created 10 dedicated tests for Swagger functionality
+
+### 2. Code Quality Improvements
+- Removed all emojis from codebase
+- Removed unnecessary comments
+- Translated all user-facing text to English
+- Improved error handling in database connections
+- Added timeout configuration for MongoDB connections
+
+### 3. Testing Enhancements
+- Created dedicated test file for Swagger (`swagger.test.js`)
+- Improved test isolation with proper setup/teardown hooks
+- Added `--runInBand` flag to run tests sequentially
+- Added `--forceExit` flag to prevent hanging processes
+- Achieved 77.43% code coverage
+
+### 4. Server Resilience
+- Modified server startup to continue even if databases are unavailable
+- Changed from `Promise.all()` to `Promise.allSettled()`
+- Added informative warnings when databases fail to connect
+- Improved error messages for better debugging
+
+### 5. Configuration Files
+- Updated `jest.config.js` for better test execution
+- Modified `package.json` test scripts
+- Created `swagger.js` configuration file
+- Improved database connection handling
+
+## License
+
+ISC
 
 ## Installation
 

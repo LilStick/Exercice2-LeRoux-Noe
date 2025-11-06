@@ -10,7 +10,6 @@ beforeAll(async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
 });
 
 afterAll(async () => {
@@ -18,7 +17,7 @@ afterAll(async () => {
   await pool.end();
 });
 
-afterEach(async () => {
+beforeEach(async () => {
   await pool.query('TRUNCATE TABLE tasks_pg RESTART IDENTITY CASCADE');
 });
 

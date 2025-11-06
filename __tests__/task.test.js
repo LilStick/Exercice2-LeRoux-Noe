@@ -9,11 +9,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await Task.deleteMany({});
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
 });
 
-afterEach(async () => {
+beforeEach(async () => {
   await Task.deleteMany({});
 });
 

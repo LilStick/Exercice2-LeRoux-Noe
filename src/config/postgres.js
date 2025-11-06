@@ -21,6 +21,7 @@ const initPostgres = async () => {
     console.log('PostgreSQL connected and table ready');
   } catch (error) {
     console.error('PostgreSQL error:', error);
+    throw error;
   }
 };
 

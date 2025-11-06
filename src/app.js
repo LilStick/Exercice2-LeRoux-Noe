@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const taskRoutes = require('./routes/taskRoutes');
 const taskPgRoutes = require('./routes/taskPgRoutes');
 const viewRoutes = require('./routes/viewRoutes');
@@ -11,6 +13,17 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Node Todo API Documentation',
+}));
+
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 app.use('/tasks', taskRoutes);
 app.use('/tasks-pg', taskPgRoutes);
