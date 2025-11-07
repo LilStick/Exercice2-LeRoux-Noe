@@ -61,6 +61,56 @@ html(lang='fr')
         font-size: 28px;
         text-align: center;
       }
+      .user-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .user-details {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .user-email {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+      .btn-logout {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-logout:hover {
+        background: rgba(255,255,255,0.3);
+      }
       .task-form {
         display: flex;
         gap: 10px;
@@ -190,6 +240,14 @@ html(lang='fr')
   body
     .container
       h1= pageTitle
+
+      .user-info
+        .user-details
+          .user-avatar= username ? username.charAt(0).toUpperCase() : 'U'
+          div
+            .user-name= username || 'Utilisateur'
+            .user-email= email || ''
+        a.btn-logout(href='/logout') Déconnexion
 
       .db-section
         h2.db-title Ajouter une tâche

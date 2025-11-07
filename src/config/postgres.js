@@ -18,7 +18,19 @@ const initPostgres = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log('PostgreSQL connected and table ready');
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users_pg (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    console.log('PostgreSQL connected and tables ready');
   } catch (error) {
     console.error('PostgreSQL error:', error);
     throw error;
