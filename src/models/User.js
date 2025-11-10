@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    oauth_provider: {
+      type: String,
+      enum: ['google', 'github', 'local'],
+      default: 'local',
+    },
+    oauth_id: {
+      type: String,
+      sparse: true,
+    },
   },
   {
     timestamps: true,

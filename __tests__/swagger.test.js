@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/app');
+const app = require('../src/app.noauth');
 
 describe('Swagger Documentation', () => {
   describe('GET /api-docs.json', () => {

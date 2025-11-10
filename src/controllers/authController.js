@@ -113,7 +113,6 @@ exports.getProfile = async (req, res) => {
       try {
         user = await User.findById(userId).select('-password');
       } catch {
-        // If userId is not a valid ObjectId, skip MongoDB
       }
     }
 

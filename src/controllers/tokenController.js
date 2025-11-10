@@ -7,7 +7,6 @@ const DATABASE_MODE = process.env.DATABASE_MODE || 'both';
 
 exports.generateToken = async (req, res) => {
   try {
-    // Extraction de l'email et du mot de passe
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -17,13 +16,11 @@ exports.generateToken = async (req, res) => {
     let user = null;
     let userId = null;
 
-    // Recherche de l'utilisateur dans la base de données
     if (DATABASE_MODE === 'mongodb' || DATABASE_MODE === 'both') {
       try {
         user = await User.findOne({ email });
 
         if (user) {
-          // Vérification du mot de passe avec la méthode comparePassword de mongoose
           const isPasswordValid = await user.comparePassword(password);
 
           if (!isPasswordValid) {
@@ -33,18 +30,15 @@ exports.generateToken = async (req, res) => {
           userId = user._id.toString();
         }
       } catch {
-        // MongoDB not available, continue with PostgreSQL
       }
     }
 
-    // Si l'utilisateur n'est pas trouvé dans MongoDB, chercher dans PostgreSQL
     if (!user && (DATABASE_MODE === 'postgresql' || DATABASE_MODE === 'both')) {
       const result = await pool.query('SELECT * FROM users_pg WHERE email = $1', [email]);
 
       if (result.rows.length > 0) {
         const pgUser = result.rows[0];
 
-        // Vérification du mot de passe
         const isPasswordValid = await bcrypt.compare(password, pgUser.password);
 
         if (!isPasswordValid) {
@@ -60,8 +54,6 @@ exports.generateToken = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Création du token JWT avec l'ID et l'email de l'utilisateur
-    // Le token a une durée de vie de 1h
     const token = jwt.sign(
       {
         id: userId,
@@ -69,7 +61,7 @@ exports.generateToken = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '1h' // Durée de validité: 1 heure
+        expiresIn: '1h'
       }
     );
 
@@ -89,7 +81,6 @@ exports.generateToken = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    // Extraction des informations utilisateur (nom, email, mdp)
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -98,32 +89,25 @@ exports.createUser = async (req, res) => {
 
     let createdUser = null;
 
-    // Enregistrement avec la méthode save() de mongoose
     if (DATABASE_MODE === 'mongodb' || DATABASE_MODE === 'both') {
       try {
-        // Vérifier si l'utilisateur existe déjà
         const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
           return res.status(400).json({ error: 'User already exists' });
         }
 
-        // Créer un nouvel utilisateur
         const newUser = new User({
           username,
           email,
           password
         });
 
-        // Enregistrement avec save() - le hook pre('save') hashera le mot de passe
         createdUser = await newUser.save();
       } catch {
-        // MongoDB not available, continue with PostgreSQL
       }
     }
 
-    // Enregistrement dans PostgreSQL
     if (DATABASE_MODE === 'postgresql' || DATABASE_MODE === 'both') {
-      // Vérifier si l'utilisateur existe déjà
       const existingUser = await pool.query(
         'SELECT * FROM users_pg WHERE email = $1 OR username = $2',
         [email, username]
@@ -134,7 +118,6 @@ exports.createUser = async (req, res) => {
       }
 
       if (existingUser.rows.length === 0) {
-        // Hasher le mot de passe pour PostgreSQL
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -143,7 +126,6 @@ exports.createUser = async (req, res) => {
           [username, email, hashedPassword]
         );
 
-        // Si MongoDB n'a pas créé d'utilisateur, utiliser PostgreSQL
         if (!createdUser) {
           createdUser = result.rows[0];
         }
@@ -154,7 +136,6 @@ exports.createUser = async (req, res) => {
       return res.status(500).json({ error: 'Failed to create user' });
     }
 
-    // Création du token JWT avec l'ID et l'email
     const userId = createdUser._id ? createdUser._id.toString() : createdUser.id.toString();
     const token = jwt.sign(
       {
@@ -163,7 +144,7 @@ exports.createUser = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '1h' // Signature du token avec la clé secrète et la durée de validité
+        expiresIn: '1h'
       }
     );
 

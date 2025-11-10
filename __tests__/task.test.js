@@ -1,6 +1,6 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../src/app');
+const app = require('../src/app.noauth');
 const Task = require('../src/models/Task');
 
 beforeAll(async () => {

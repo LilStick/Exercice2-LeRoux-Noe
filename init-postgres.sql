@@ -10,8 +10,21 @@ CREATE TABLE IF NOT EXISTS tasks_pg (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Vérifier la table
+-- Créer la table users_pg pour l'authentification
+CREATE TABLE IF NOT EXISTS users_pg (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  oauth_provider VARCHAR(50) DEFAULT 'local',
+  oauth_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Vérifier les tables
 \d tasks_pg
+\d users_pg
 
 -- Exemple de données
 -- INSERT INTO tasks_pg (title) VALUES ('Ma première tâche');

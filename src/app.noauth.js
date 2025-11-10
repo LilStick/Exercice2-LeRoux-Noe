@@ -5,10 +5,9 @@ const session = require('express-session');
 const passport = require('./config/passport');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
-const { generalLimiter, authLimiter, tokenLimiter, apiLimiter } = require('./middleware/rateLimiter');
 const taskRoutes = require('./routes/taskRoutes');
 const taskPgRoutes = require('./routes/taskPgRoutes');
-const viewRoutes = require('./routes/viewRoutes');
+const viewRoutesNoAuth = require('./routes/viewRoutes.noauth');
 const authRoutes = require('./routes/authRoutes');
 const tokenRoutes = require('./routes/tokenRoutes');
 const oauthRoutes = require('./routes/oauthRoutes');
@@ -35,8 +34,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(generalLimiter);
-
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,
   customCss: '.swagger-ui .topbar { display: none }',
@@ -48,11 +45,11 @@ app.get('/api-docs.json', (req, res) => {
   res.send(swaggerSpec);
 });
 
-app.use('/auth', authLimiter, authRoutes);
-app.use('/oauth', authLimiter, oauthRoutes);
-app.use('/token', tokenLimiter, tokenRoutes);
-app.use('/tasks', apiLimiter, taskRoutes);
-app.use('/tasks-pg', apiLimiter, taskPgRoutes);
-app.use('/', viewRoutes);
+app.use('/auth', authRoutes);
+app.use('/oauth', oauthRoutes);
+app.use('/token', tokenRoutes);
+app.use('/tasks', taskRoutes);
+app.use('/tasks-pg', taskPgRoutes);
+app.use('/', viewRoutesNoAuth);
 
 module.exports = app;

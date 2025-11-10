@@ -112,7 +112,6 @@ exports.handleLogin = async (req, res) => {
           username = user.username;
         }
       } catch {
-        // MongoDB not available
       }
     }
 
@@ -145,7 +144,7 @@ exports.handleLogin = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000,
       sameSite: 'strict'
     });
 
@@ -174,13 +173,25 @@ exports.renderTodoList = async (req, res) => {
       pgTasks = pgResult.rows;
     }
 
-    const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+    let username = 'Guest';
+    let email = '';
+
+    if (req.cookies && req.cookies.token) {
+      try {
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        username = decoded.username;
+        email = decoded.email;
+      } catch {
+      }
+    }
 
     res.render('index', {
       mongoTasks,
       pgTasks,
-      username: decoded.username,
-      email: decoded.email
+      username,
+      email,
+      pageTitle: 'TodoList',
+      emptyMessage: 'Aucune tâche pour le moment'
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
